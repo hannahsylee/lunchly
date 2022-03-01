@@ -14,13 +14,24 @@ class Customer {
     this.notes = notes;
   }
 
-  /** Hidden _notes property to ensure that if someone tries to assign a falsey value to a customer’s notes, the value instead gets assigned to an empty string. */
-  get notes(val) {
-    return this._notes = val || "";
-  }
+  /** methods for getting/setting notes (keep as empty string, not NULL) */
 
   set notes(val) {
-    this._notes = val;
+    this._notes = val || "";
+  }
+
+  get notes() {
+    return this._notes;
+  }
+
+  /** methods for getting/setting phone #. */
+
+  set phone(val) {
+    this._phone = val || null;
+  }
+
+  get phone() {
+    return this._phone;
   }
 
   /** Full Name */
@@ -77,16 +88,15 @@ class Customer {
       phone, 
       notes 
       FROM customers 
-      WHERE first_name LIKE '($1)%' 
-      ORDER BY last_name, first_name`, [q]
-
+      WHERE first_name LIKE '%${q}%'
+      ORDER BY last_name, first_name`
     );
     return results.rows.map(c => new Customer(c));
   }
 
   /** search top 10 best customers (customers with most reservations) */
 
-  static async bestCustomers(q) {
+  static async bestCustomers() {
     const results = await db.query(
       `SELECT COUNT(*) AS num_reservations, 
       c.id, 
@@ -99,7 +109,7 @@ class Customer {
       ON r.customer_id = c.id                                                                                                                                                                                     
       GROUP BY c.id, c.last_name, c.first_name, c.phone, c.notes 
       ORDER BY num_reservations 
-      DESC LIMIT 10;`, [q]
+      DESC LIMIT 10;`
     );
     
     return results.rows.map(c => new Customer(c));

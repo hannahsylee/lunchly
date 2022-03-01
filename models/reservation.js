@@ -27,15 +27,29 @@ class Reservation {
     return this._numGuests;
   }
 
-  /** methods for getting/setting start date */
+  /** methods for setting/getting startAt time */
 
-  set startDate(val) {
-    if (val instanceof Date && !isNaN(val)) this._startDate = val;
-    else throw new Error("Not valid start date.");
+  set startAt(val) {
+    if (val instanceof Date && !isNaN(val)) this._startAt = val;
+    else throw new Error("Not a valid startAt.");
   }
 
-  get startDate() {
-    return this._startDate;
+  get startAt() {
+    return this._startAt;
+  }
+
+  get formattedStartAt() {
+    return moment(this.startAt).format("MMMM Do YYYY, h:mm a");
+  }
+
+  /** methods for setting/getting notes (keep as a blank string, not NULL) */
+
+  set notes(val) {
+    this._notes = val || "";
+  }
+
+  get notes() {
+    return this._notes;
   }
 
   /** methods for setting/getting customer ID: can only set once. */
@@ -48,15 +62,6 @@ class Reservation {
 
   get customerId() {
     return this._customerId;
-  }
-
-  /** Hidden _notes property to ensure that if someone tries to assign a falsey value to a customer’s notes, the value instead gets assigned to an empty string. */
-  get notes(val) {
-    return this._notes = val || "";
-  }
-
-  set notes(val) {
-    this._notes = val;
   }
 
   /** formatter for startAt */

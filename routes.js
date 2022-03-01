@@ -1,7 +1,7 @@
 /** Routes for Lunchly */
 
 const express = require("express");
-const { search } = require("./app");
+// const { search } = require("./app");
 
 const Customer = require("./models/customer");
 const Reservation = require("./models/reservation");
@@ -11,22 +11,35 @@ const router = new express.Router();
 /** Homepage: show list of customers. */
 
 router.get("/", async function(req, res, next) {
-  // search = req.params.get('q');
   let customers;
-  // if not search:
-  //     users = User.query.all()
-  // else:
-  //     users = User.query.filter(User.username.like(f"%{search}%")).all()
-  try {
-    if (!search) {
-      customers = await Customer.all();
-    } else {
-      customers = await Customer.search(req.params.q);
-      // customers = await Customer.query.filter(Customer.name.like(`${search}`).all())
-    } return res.render("customer_list.html", { customers });
 
-    // const customers = await Customer.all();
-    // return res.render("customer_list.html", { customers });
+  try {
+    customers = await Customer.all();
+    return res.render("customer_list.html", { customers });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+router.get("/search/", async function(req,res,next){
+  let customers;
+
+  try {
+    customers = await Customer.search(req.query.q);
+    return res.render("customer_list.html", {customers});
+  } catch (err) {
+    return next(err);
+  }
+});
+
+router.get("/top-ten/", async function(req, res, next){
+  let customers; 
+
+  try {
+
+    customers = await Customer.bestCustomers();
+    return res.render("customer_list.html", { customers });
+
   } catch (err) {
     return next(err);
   }
